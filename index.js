@@ -37,7 +37,7 @@ module.exports = function (sails) {
     logPrefix: '',
 
 
-    configure() {
+    async configure() {
       let webpackConfig = sails.config[this.configKey];
       this.logPrefix = webpackConfig.logPrefix;
 
@@ -56,7 +56,8 @@ module.exports = function (sails) {
       let options = webpackConfig.options;
       // Merge environment-specific options
       if (webpackConfig[environment]) {
-        options = merge(options, webpackConfig[environment]);
+        var env_options = await webpackConfig[environment];
+        options = merge(options, env_options);
       }
       // Merge default options
       options = merge(options, {
@@ -82,9 +83,9 @@ module.exports = function (sails) {
 
       // Registrating dev and hot Middleware for development
       if (environment === 'development') {
-		const historyFallback = require('connect-history-api-fallback');
-		const webpackDev = require('webpack-dev-middleware');
-		const webpackHot = require('webpack-hot-middleware');
+        const historyFallback = require('connect-history-api-fallback');
+        const webpackDev = require('webpack-dev-middleware');
+        const webpackHot = require('webpack-hot-middleware');
 
         // disabling logging, we already handle logging in compiler callback and displayStats
         let config = {
